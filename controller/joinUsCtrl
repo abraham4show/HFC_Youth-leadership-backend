@@ -1,0 +1,15 @@
+export const createJoinUs = async (req, res) => {
+  try {
+    console.log("📥 Incoming data:", req.body); // 👈 log the incoming data
+
+    const newJoinUs = new JoinUs(req.body);
+    await newJoinUs.save();
+
+    res.status(201).json({ message: "Application submitted successfully!" });
+  } catch (err) {
+    console.error("❌ Error saving JoinUs form:", err.message); // 👈 log the error clearly
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: err.message });
+  }
+};
