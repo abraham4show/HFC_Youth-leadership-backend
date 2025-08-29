@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -27,6 +26,10 @@ app.use(express.json());
 app.get("/api/test", (req, res) => {
   res.json({ message: "✅ Backend server is working!" });
 });
+
+// ✅✅✅ ADD THESE LINES - Import and use the contact routes ✅✅✅
+import contactRoutes from "./routes/contactRoutes.js";
+app.use("/api/contact", contactRoutes);
 
 // MongoDB Connection
 const connectDB = async () => {
