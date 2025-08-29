@@ -1,53 +1,54 @@
+// server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-dotenv.config();
-
+// Initialize Express app
 const app = express();
 
-// Replace your current CORS configuration with this:
+// Load environment variables
+dotenv.config();
+
+// Middleware
 app.use(
   cors({
     origin: [
-      "https://hfc-youth-ministry.netlify.app", // Your FRONTEND URL
-      "http://localhost:3000", // Local development
+      "https://hfc-youth-ministry.netlify.app",
+      "http://localhost:5173",
+      "http://localhost:3000",
     ],
     credentials: true,
   })
 );
-app.use(express.json()); // allows us to accept JSON
+app.use(express.json());
 
-// Add these after CORS middleware
-app.use((req, res, next) => {
-  console.log("Incoming request from:", req.headers.origin);
-  console.log("Request method:", req.method);
-  console.log("Request path:", req.path);
-  next();
-});
-
-// Add error handling middleware
-app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  res.status(500).json({ error: "Something went wrong!" });
+// Basic test route
+app.get("/api/test", (req, res) => {
+  res.json({ message: "✅ Backend server is working!" });
 });
 
 // MongoDB Connection
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB Connected");
+  } catch (error) {
+    console.error("❌ MongoDB connection error:", error);
+    process.exit(1);
+  }
+};
 
-// Routes
-import contactRoutes from "./routes/contactRoutes.js";
-import joinUsRoutes from "./routes/joinUsRoutes.js";
-
-app.use("/api/contact", contactRoutes);
-app.use("/api/joinus", joinUsRoutes);
-
+// Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+const startServer = async () => {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🔗 Test it at: http://localhost:${PORT}/api/test`);
+  });
+};
+
+// Start the application
+startServer();
