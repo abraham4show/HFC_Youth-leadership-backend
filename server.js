@@ -7,14 +7,31 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+// Replace your current CORS configuration with this:
 app.use(
   cors({
-    origin: "http://localhost:5173", // Your React app's URL
+    origin: [
+      "https://hfc-youth-ministry.netlify.app", // Your FRONTEND URL
+      "http://localhost:3000", // Local development
+    ],
     credentials: true,
   })
 );
 app.use(express.json()); // allows us to accept JSON
+
+// Add these after CORS middleware
+app.use((req, res, next) => {
+  console.log("Incoming request from:", req.headers.origin);
+  console.log("Request method:", req.method);
+  console.log("Request path:", req.path);
+  next();
+});
+
+// Add error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({ error: "Something went wrong!" });
+});
 
 // MongoDB Connection
 mongoose
