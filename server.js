@@ -31,6 +31,10 @@ app.get("/api/test", (req, res) => {
 import contactRoutes from "./routes/contactRoutes.js";
 app.use("/api/contact", contactRoutes);
 
+// ✅✅✅ ADD THESE LINES - Import and use the joinUs routes ✅✅✅
+import joinUsRoutes from "./routes/joinUsRoutes.js";
+app.use("/api/joinus", joinUsRoutes);
+
 // MongoDB Connection
 const connectDB = async () => {
   try {
