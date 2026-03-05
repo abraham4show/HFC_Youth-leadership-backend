@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-
+import User from "./models/User.js";
 // Initialize Express app
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(
       "http://localhost:3000",
     ],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 
@@ -56,6 +56,45 @@ const startServer = async () => {
     console.log(`🔗 Test it at: http://localhost:${PORT}/api/test`);
   });
 };
+
+// User registration
+app.post("/api/users/register", async (req, res) => {
+  try {
+    const { name, email, phone } = req.body;
+
+    // Basic validation
+    if (!name || !email) {
+      return res.status(400).json({ error: "Name and email are required" });
+    }
+
+    // Check if user already exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(200).json({ user, message: "User already exists" });
+    }
+
+    // Create new user
+    user = new User({ name, email, phone });
+    await user.save();
+
+    res.status(201).json({ user });
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Get user by email (login)
+app.post("/api/users/login", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Start the application
 startServer();
