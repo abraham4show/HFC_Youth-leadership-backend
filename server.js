@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import User from "./models/User.js";
 import Comment from "./models/comment.js";
-import Like from "./models/Like.js";
+import Like from "./models/Likes.js";
 // Initialize Express app
 const app = express();
 
