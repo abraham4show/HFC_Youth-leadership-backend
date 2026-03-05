@@ -167,5 +167,23 @@ app.post("/api/posts/:postId/likes/toggle", async (req, res) => {
   }
 });
 
+// POST /api/posts/counts – get like and comment counts for multiple posts
+app.post("/api/posts/counts", async (req, res) => {
+  try {
+    const { postIds } = req.body; // array of Contentful post IDs
+    const likeCounts = await Like.aggregate([
+      { $match: { postId: { $in: postIds } } },
+      { $group: { _id: "$postId", count: { $sum: 1 } } },
+    ]);
+    const commentCounts = await Comment.aggregate([
+      { $match: { postId: { $in: postIds } } },
+      { $group: { _id: "$postId", count: { $sum: 1 } } },
+    ]);
+    res.json({ likeCounts, commentCounts });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Start the application
 startServer();
